@@ -15,6 +15,8 @@ app.listen(Port, () => {
 
 app.use("/api/users", require("./routes/userRoute"));
 
+app.use('/api/organizations', require('./routes/orgRoute'))
+
 app.use = (req, res, next) => {
     res.status(404).send("Error: Endpoint not found");
   };

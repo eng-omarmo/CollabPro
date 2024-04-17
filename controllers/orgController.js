@@ -24,33 +24,33 @@ const getOrg = async (req, res) => {
 }
 const getOrgById = async (req, res) => {
     try {
-        const id = req.params.id.trim();
+        const orgId = req.params.id.trim();
         
-        // Validate if the provided ID is a valid MongoDB ObjectID
-        if (!mongoose.Types.ObjectId.isValid(id)) {                                                                                                                                 
-            return res.status(404).json({ message: "Invalid ID" });
+        // Validate if the provided organization ID is a valid MongoDB ObjectID
+        if (!mongoose.Types.ObjectId.isValid(orgId)) {                                                                                                                                 
+            return res.status(404).json({ message: "Invalid organization ID" });
         }
         
-        // Check if the user is authorized to access this organization
-        if (id !== req.user._id.toString().trim()) {                                                
+        // Retrieve the organization by user ID in the token
+        const user = req.user; // Assuming req.user contains the user information from authentication
+        
+        // Check if the user has a reference to the organization with the provided ID
+        const organization = await Organization.findOne({ _id: orgId, userReferences: user._id });
+
+        // Check if the organization exists and user is authorized to access it
+        if (!organization) {                                                
             return res.status(401).json({ message: "Unauthorized" });
         }
         
-        // Find the organization by ID
-        const organization = await Organization.findById(id);
-        
-        // Check if the organization exists
-        if (!organization) {
-            return res.status(404).json({ message: "Organization not found" });
-        }
-        
-        // Send the organization data if found
+        // Send the organization data if found and user is eligible
         res.status(200).json({ message: "Organization found", organization });
     } catch (error) {
         // Handle any errors that occur during the process
         res.status(500).json({ message: error.message });
     }
 };
+
+
 
 const createOrg = async (req, res) => {
     try {

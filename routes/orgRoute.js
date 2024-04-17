@@ -12,3 +12,4 @@ const {
 router.route("/").get(getOrg).post(createOrg);
 router.route("/:id").get(auth,getOrgById).put(auth,updateOrg).delete(auth,deleteOrg);
 module.exports = router
+

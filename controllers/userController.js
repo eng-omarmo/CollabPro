@@ -178,7 +178,6 @@ const updateUser = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
 const deleteUser = async (req, res) => {
   try {
     const id = req.params.id.trim();
@@ -186,23 +185,34 @@ const deleteUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid user ID provided" });
     }
     if (id !== req.user._id.toString().trim()) {
-      return res
-        .status(401)
-        .json({ message: "Unauthorized to fetch this user" });
+      return res.status(401).json({ message: "Unauthorized to delete this user" });
     }
-
-    await User.findByIdAndDelete(id);
-    // Logic to delete user goes here
-    res.status(200).json({
-      message: "User deleted successfully",
-    });
+    
+    // Check if user is an admin
+    const user = await User.findById(id);
+    if (user.is_admin) {
+      // If user is an admin, find the organization associated with the user
+      const org = await Organization.findOne({ userReferences: id });
+      if (!org) {
+        return res.status(404).json({ message: "User does not have an organization" });
+      }
+      // Delete the organization
+      await Organization.findByIdAndDelete(org._id);
+    }
+    
+    // Delete the user
+    const deletedUser = await User.findByIdAndDelete(id);
+    if (!deletedUser) {
+      return res.status(404).json({ message: "Failed to delete user" });
+    }
+    
+    res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
     console.error("Error deleting user:", error);
-    res.status(500).json({
-      message: "Internal server error",
-    });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
+
 const verifyUser = async (req, res) => {
   try {
     const token = req.params.token;

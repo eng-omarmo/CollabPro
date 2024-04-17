@@ -12,8 +12,8 @@ const sendEmail = require("../utility/mailer");
 
 const getOrg = async (req, res) => {
     try {
-        const getOrganization = await organization.find()
-        if (!organization) {
+        const getOrganization = await Organization.find()
+        if (!getOrganization) {
             res.status(404).json({ message: "organization not found" })
         }
         res.status(200).json({ message: getOrganization })
@@ -22,26 +22,36 @@ const getOrg = async (req, res) => {
         res.status(500).json({ message: error.message })
     }
 }
-
 const getOrgById = async (req, res) => {
     try {
-        const id = req.params.id
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(404).json({ message: "invalid id" })
+        const id = req.params.id.trim();
+        
+        // Validate if the provided ID is a valid MongoDB ObjectID
+        if (!mongoose.Types.ObjectId.isValid(id)) {                                                                                                                                 
+            return res.status(404).json({ message: "Invalid ID" });
         }
-        if (id !== req.user._id.toString().trim()) {
-            return res.status(401).json({ message: "unauthorized" })
+        
+        // Check if the user is authorized to access this organization
+        if (id !== req.user._id.toString().trim()) {                                                
+            return res.status(401).json({ message: "Unauthorized" });
         }
-        const getOrganization = await organization.findById(id)
+        
+        // Find the organization by ID
+        const organization = await Organization.findById(id);
+        
+        // Check if the organization exists
         if (!organization) {
-            res.status(404).json({ message: "organization not found" })
+            return res.status(404).json({ message: "Organization not found" });
         }
-        res.status(200).json({ message: "get org by id" })
-
+        
+        // Send the organization data if found
+        res.status(200).json({ message: "Organization found", organization });
     } catch (error) {
-        res.status(500).json({ message: error.message })
+        // Handle any errors that occur during the process
+        res.status(500).json({ message: error.message });
     }
-}
+};
+
 const createOrg = async (req, res) => {
     try {
         const { name, address, contact, industry, website, password } = req.body;

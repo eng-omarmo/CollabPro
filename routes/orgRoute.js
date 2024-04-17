@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+
+const auth = require('../middleware/auth');
 const {
     getOrg,
     createOrg,
@@ -8,5 +10,5 @@ const {
     getOrgById
 } = require("../controllers/orgController");
 router.route("/").get(getOrg).post(createOrg);
-router.route("/:id").get(getOrgById).put(updateOrg).delete(deleteOrg);
+router.route("/:id").get(auth,getOrgById).put(auth,updateOrg).delete(auth,deleteOrg);
 module.exports = router

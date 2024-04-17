@@ -78,15 +78,13 @@ const createUser = async (req, res) => {
 
     // Generate token
     const token = generateToken(user);
-    // if (!token) {
-    //   return res.status(500).json({ message: "Failed to generate token" });
-    // }
+    if (!token) {
+      return res.status(400).json({ message: "Failed to generate token" });
+    }
 
     // Return success response with user data and token
     res.status(201).json({
-      message: "User created successfully",
-      user,
-      token
+      message: user, token
     });
   } catch (error) {
     console.error("Error creating user:", error);

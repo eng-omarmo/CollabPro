@@ -1,21 +1,22 @@
+const { text } = require('express');
 const nodemailer = require('nodemailer');
 
-const sendEmail = async (to, subject, text) => {
+const sendEmail = async (to, subject, html) => {
   // Create a Nodemailer transporter using SMTP
   const transporter = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
-      user: process.env.Myemail,
-      pass: process.env.Mypassword
+      user: process.env.myEmail,
+      pass: process.env.myAppPassword
     }
   });
 
   // Define email options
   const mailOptions = {
-    from: from,
+    from: `CollabPro App ${process.env.myEmail}`,
     to: to,
     subject: subject,
-    text: text
+    html: html
   };
 
   // Send email

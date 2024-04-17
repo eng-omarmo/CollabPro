@@ -10,7 +10,7 @@ const getUser = async (req, res) => {
       res.status(200).json({ message: "No user Found" });
     }
     res.status(200).json({
-      message: user
+      message: user,
     });
   } catch (error) {
     console.error("Error fetching user data:", error);
@@ -26,7 +26,9 @@ const getUserById = async (req, res) => {
       return res.status(400).json({ message: "Invalid user ID provided" });
     }
     if (id !== req.user._id.toString().trim()) {
-      return res.status(401).json({ message: "Unauthorized to fetch this user" });
+      return res
+        .status(401)
+        .json({ message: "Unauthorized to fetch this user" });
     }
     const user = await User.findById(id);
     if (!user) {
@@ -41,7 +43,6 @@ const getUserById = async (req, res) => {
   }
 };
 
-
 const createUser = async (req, res) => {
   try {
     const { name, email, password, is_admin } = req.body;
@@ -53,7 +54,9 @@ const createUser = async (req, res) => {
 
     // Check password length
     if (password.length < 6) {
-      return res.status(400).json({ message: "Password must be at least 6 characters" });
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 6 characters" });
     }
 
     // Check if email is valid
@@ -63,8 +66,10 @@ const createUser = async (req, res) => {
     }
 
     // Check if is_admin is a valid boolean value
-    if (typeof is_admin !== 'boolean') {
-      return res.status(400).json({ message: "is_admin must be true or false" });
+    if (typeof is_admin !== "boolean") {
+      return res
+        .status(400)
+        .json({ message: "is_admin must be true or false" });
     }
 
     // Hash the password
@@ -86,27 +91,30 @@ const createUser = async (req, res) => {
       password: hashedPassword,
       is_admin,
       emailVerificationToken: verificationToken,
-      isEmailVerified: false
+      isEmailVerified: false,
     });
     const emailOptions = {
       subject: "Account Verification",
       html: `<p>Please click the following link to verify your account:</p>
       <a href="http://localhost:3000/api/users/verify/${verificationToken}" 
-      style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 5px;">Verify Account</a>`
+      style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 5px;">Verify Account</a>`,
     };
 
     // Send verification email to the user
     await sendEmail(email, emailOptions.subject, emailOptions.html);
 
-
     // Return success response
-    res.status(201).json({ message: "User created successfully. Verification email sent.", user });
+    res
+      .status(201)
+      .json({
+        message: "User created successfully. Verification email sent.",
+        user,
+      });
   } catch (error) {
     console.error("Error creating user:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
 
 const updateUser = async (req, res) => {
   try {
@@ -115,33 +123,48 @@ const updateUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid user ID provided" });
     }
     if (id !== req.user._id.toString().trim()) {
-      return res.status(401).json({ message: "Unauthorized to fetch this user" });
+      return res
+        .status(401)
+        .json({ message: "Unauthorized to fetch this user" });
     }
     const { name, email, password, is_admin } = req.body;
 
     // Check if at least one field is provided to update
     if (!name && !email && !password) {
-      return res.status(400).json({ message: "At least one field (name, email, password) must be provided to update" });
+      return res
+        .status(400)
+        .json({
+          message:
+            "At least one field (name, email, password) must be provided to update",
+        });
     }
 
     // Check if user exists with the provided email
     if (email) {
       const existingUser = await User.findOne({ email });
       if (existingUser && existingUser._id.toString() !== id) {
-        return res.status(400).json({ message: "User with this email already exists" });
+        return res
+          .status(400)
+          .json({ message: "User with this email already exists" });
       }
     }
 
     // Check password length
     if (password && password.length < 6) {
-      return res.status(400).json({ message: "Password must be at least 6 characters" });
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 6 characters" });
     }
 
     //hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Update user
-    const updatedUser = await User.findByIdAndUpdate(id, { name, email, password: hashedPassword, is_admin }, { new: true });
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { name, email, password: hashedPassword, is_admin },
+      { new: true }
+    );
 
     // Check if user was found and updated
     if (!updatedUser) {
@@ -156,16 +179,16 @@ const updateUser = async (req, res) => {
   }
 };
 
-
 const deleteUser = async (req, res) => {
   try {
-
     const id = req.params.id.trim();
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid user ID provided" });
     }
     if (id !== req.user._id.toString().trim()) {
-      return res.status(401).json({ message: "Unauthorized to fetch this user" });
+      return res
+        .status(401)
+        .json({ message: "Unauthorized to fetch this user" });
     }
 
     await User.findByIdAndDelete(id);
@@ -182,7 +205,6 @@ const deleteUser = async (req, res) => {
 };
 const verifyUser = async (req, res) => {
   try {
-
     const token = req.params.token;
     if (!token) {
       res.status(400).json({ message: "no token found in the request" });
@@ -202,16 +224,12 @@ const verifyUser = async (req, res) => {
     res.status(200).json({
       message: "User verified successfully",
     });
-
   } catch (error) {
-
     res.status(500).json({
       message: "Internal server error",
     });
-
   }
-
-}
+};
 const generateToken = (user) => {
   return jsonwebtoken.sign(
     {
@@ -223,16 +241,16 @@ const generateToken = (user) => {
     process.env.JWT_SECRET,
     { expiresIn: "2h" }
   );
-}
+};
 
 generateRandomToken = (n) => {
-  var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  var token = '';
+  var chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  var token = "";
   for (var i = 0; i < n; i++) {
     token += chars[Math.floor(Math.random() * chars.length)];
   }
   return token;
-}
+};
 
 const loginUser = async (req, res) => {
   try {
@@ -243,7 +261,9 @@ const loginUser = async (req, res) => {
     }
 
     if (!user.isEmailVerified) {
-      return res.status(401).json({ message: "Please verify your email first" });
+      return res
+        .status(401)
+        .json({ message: "Please verify your email first" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -259,8 +279,6 @@ const loginUser = async (req, res) => {
   }
 };
 
-
-
 module.exports = {
   getUser,
   getUserById,
@@ -268,5 +286,5 @@ module.exports = {
   updateUser,
   deleteUser,
   verifyUser,
-  loginUser
+  loginUser,
 };

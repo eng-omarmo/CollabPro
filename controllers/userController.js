@@ -1,5 +1,5 @@
 const User = require("../models/userModel");
-
+const mongoose = require("mongoose");
 const sendEmail = require("../utility/mailer");
 const jsonwebtoken = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
@@ -19,28 +19,29 @@ const getUser = async (req, res) => {
     });
   }
 };
-
 const getUserById = async (req, res) => {
   try {
-    const { id } = req.params;
-    if (!id) {
-      res.status(400).json({ message: "no params provided" });
+    const id = req.params.id.trim();
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid user ID provided" });
+    }
+    if (id !== req.user._id.toString().trim()) {
+      return res.status(401).json({ message: "Unauthorized to fetch this user" });
     }
     const user = await User.findById(id);
     if (!user) {
-      res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "User not found" });
     }
+
     // Logic to fetch user by ID goes here
-    res.status(200).json({
-      message: user
-    });
+    res.status(200).json({ message: user });
   } catch (error) {
     console.error("Error fetching user by ID:", error);
-    res.status(500).json({
-      message: "Internal server error",
-    });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
 const createUser = async (req, res) => {
   try {
     const { name, email, password, is_admin } = req.body;
@@ -109,13 +110,14 @@ const createUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { name, email, password, is_admin } = req.body;
-
-    // Check if id is provided
-    if (!id) {
-      return res.status(400).json({ message: "No user ID provided" });
+    const id = req.params.id.trim();
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid user ID provided" });
     }
+    if (id !== req.user._id.toString().trim()) {
+      return res.status(401).json({ message: "Unauthorized to fetch this user" });
+    }
+    const { name, email, password, is_admin } = req.body;
 
     // Check if at least one field is provided to update
     if (!name && !email && !password) {
@@ -158,13 +160,12 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
   try {
 
-    const { id } = req.params;
-    if (!id) {
-      res.status(400).json({ message: "no params provided" });
+    const id = req.params.id.trim();
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid user ID provided" });
     }
-    const user = User.findById(id);
-    if (!user) {
-      res.status(404).json({ message: "User not found" });
+    if (id !== req.user._id.toString().trim()) {
+      return res.status(401).json({ message: "Unauthorized to fetch this user" });
     }
 
     await User.findByIdAndDelete(id);
@@ -233,6 +234,31 @@ generateRandomToken = (n) => {
   return token;
 }
 
+const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!user.isEmailVerified) {
+      return res.status(401).json({ message: "Please verify your email first" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    const token = generateToken(user);
+    res.status(200).json({ token });
+  } catch (error) {
+    console.error("Error logging in:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 
 
 module.exports = {
@@ -241,5 +267,6 @@ module.exports = {
   createUser,
   updateUser,
   deleteUser,
-  verifyUser
+  verifyUser,
+  loginUser
 };

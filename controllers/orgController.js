@@ -65,6 +65,10 @@ const createOrg = async (req, res) => {
         }
 
         // Handle logo file operations
+        // Ensure the logo file is provided as a file path string
+        if (typeof logo !== 'string') {
+            return res.status(400).json({ message: "Logo must be provided as a file path string" });
+        }
         const logoPath = await handleLogo(logo);
 
 
@@ -134,7 +138,7 @@ const createOrg = async (req, res) => {
             html: `<h1>Verify Your Account</h1>
             <h4>Hello ${name}, welcome to CollabPro! Thank you for choosing us. Please verify your account:</h4>
             <p>Please click the following link to verify your account:</p>
-            <div><a href="http://localhost:3000/api/organizations/verifyorganization/${verificationToken}" 
+            <div><a href="http://localhost:3000/api/organizations/verifyOrganization/${verificationToken}" 
             style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 5px;">Verify Account</a> </div>`,
         };
 
@@ -156,11 +160,52 @@ const createOrg = async (req, res) => {
 
 const updateOrg = async (req, res) => {
     try {
-        res.status(200).json({ message: "update org" });
+        const orgId = req.params.id;
+        const { name, address, type, contact, industry, website, logo } = req.body;
+
+        // Validate required fields
+        if (!name || !address || !type || !contact || !industry || !website) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+        // if the user in the params and auth middleware are the same in order to access the data
+        const AuthOrgId = req.user.orgId
+        const is_admin = req.user.is_admin
+        if (!is_admin && AuthOrgId.toString() !== orgId) {
+            return res
+                .status(401)
+                .json({ message: "Unauthorized to access this organization" });
+        }
+        // Find the organization to update
+        const orgToUpdate = await Organization.findById(orgId);
+        if (!orgToUpdate) {
+            return res.status(404).json({ message: "Organization not found" });
+        }
+
+        // Update organization fields
+        orgToUpdate.name = name;
+        orgToUpdate.address = address;
+        orgToUpdate.type = type;
+        orgToUpdate.contact = contact;
+        orgToUpdate.industry = industry;
+        orgToUpdate.website = website;
+
+        // Update logo if provided
+        if (logo) {
+            const logoPath = await handleLogo(logo);
+            orgToUpdate.logo = logoPath;
+        }
+
+        // Save the updated organization
+        const updatedOrg = await orgToUpdate.save();
+
+        // Send success response
+        res.status(200).json({ message: "Organization updated successfully", organization: updatedOrg });
     } catch (error) {
+        // Handle any errors that occur during the process
         res.status(500).json({ message: error.message });
     }
 };
+
 
 const deleteOrg = async (req, res) => {
     try {
@@ -184,11 +229,11 @@ const deleteOrg = async (req, res) => {
 
         //delete the organization and associated users
         const deletedOrg = await Organization.findByIdAndDelete(orgId);
-        if(!deletedOrg) {
+        if (!deletedOrg) {
             return res.status(404).json({ message: "Organization not found" });
         }
         const deletedUsers = await User.deleteMany({ orgId: deletedOrg._id });
-        if(!deletedUsers) {
+        if (!deletedUsers) {
             return res.status(404).json({ message: "Associated users not found" });
         }
         res.status(200).json({ message: "Organization and associated users deleted successfully" });
@@ -197,7 +242,7 @@ const deleteOrg = async (req, res) => {
     }
 };
 
-const verifyorganization = async (req, res) => {
+const verifyOrganization = async (req, res) => {
     try {
         const { token } = req.params;
         const user = await User.findOne({ emailVerificationToken: token });
@@ -205,7 +250,7 @@ const verifyorganization = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        if(user.orgId.trim().toString()!== req.user.orgId.trim().toString()) {
+        if (user.orgId.trim().toString() !== req.user.orgId.trim().toString()) {
             res.status(401).json({ message: "Unauthorized to access this organization" });
         }
         user.isEmailVerified = true;
@@ -217,4 +262,4 @@ const verifyorganization = async (req, res) => {
     }
 };
 
-module.exports = { getOrg, getOrgById, createOrg, updateOrg, deleteOrg, verifyorganization };
+module.exports = { getOrg, getOrgById, createOrg, updateOrg, deleteOrg, verifyOrganization };

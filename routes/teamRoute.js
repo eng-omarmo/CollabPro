@@ -1,12 +1,15 @@
-const Team = require("../models/teamModel");
-
 const express = require("express");
+
 const router = express.Router();
-const {} = require("../controllers/teamController");
+const { getTeam, createTeam, updateTeam, deleteTeam, getTeamById } = require("../controllers/teamController");
 const auth = require("../middleware/auth");
 
-router.get("/team", auth, getTeam).post(auth, createTeam)
-router.put("/team/:id", auth, updateTeam).delete(auth, deleteTeam)
+router.route("/").get(auth, getTeam).post(auth, createTeam);
+router
+    .route("/:id")
+    .get(auth, getTeamById)
+    .put(auth, updateTeam)
+    .delete(auth, deleteTeam);
 
 
 

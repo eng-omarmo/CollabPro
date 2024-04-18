@@ -22,6 +22,7 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    orgId : { type: mongoose.Schema.Types.ObjectId, ref: 'Organization' },
     emailVerificationToken: String,
     emailVerificationTokenExpiry: Date,
     createdAt: {

@@ -91,17 +91,20 @@ const createUser = async (req, res) => {
       password: hashedPassword,
       is_admin,
       emailVerificationToken: verificationToken,
-      isEmailVerified: false,
+      isEmailVerified: true,
     });
-    const emailOptions = {
-      subject: "Account Verification",
-      html: `<p>Please click the following link to verify your account:</p>
-      <a href="http://localhost:3000/api/users/verify/${verificationToken}" 
-      style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 5px;">Verify Account</a>`,
-    };
 
-    // Send verification email to the user
-    await sendEmail(email, emailOptions.subject, emailOptions.html);
+    //requirement has changed no need to send email verification
+
+    // const emailOptions = {
+    //   subject: "Account Verification",
+    //   html: `<p>Please click the following link to verify your account:</p>
+    //   <a href="http://localhost:3000/api/users/verify/${verificationToken}" 
+    //   style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 5px;">Verify Account</a>`,
+    // };
+
+    // // Send verification email to the user
+    // await sendEmail(email, emailOptions.subject, emailOptions.html);
 
     // Return success response
     res

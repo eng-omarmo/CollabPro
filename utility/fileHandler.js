@@ -14,7 +14,6 @@ const handleLogo = async (logo) => {
     if (!validExtensions.includes(logoExt)) {
         throw new Error("Logo must have a valid file extension (.jpg, .jpeg, .png)");
     }
-    
 
     // Move the logo file to the public folder
     const logoName = path.basename(logo);

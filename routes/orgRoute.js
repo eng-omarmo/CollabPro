@@ -8,14 +8,14 @@ const {
   updateOrg,
   deleteOrg,
   getOrgById,
-  verifyorganization
+  verifyOrganization
 } = require("../controllers/orgController");
 router.route("/").get(getOrg).post(createOrg);
 router
   .route("/:id")
-  .get(auth, getOrgById)
+  .get(auth,getOrgById)
   .put(auth, updateOrg)
   .delete(auth, deleteOrg);
 
-router.get("/verifyorganization/:token", verifyorganization);
+router.get("/verifyOrganization/:token", verifyOrganization);
 module.exports = router;

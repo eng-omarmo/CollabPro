@@ -19,11 +19,10 @@ const organizationSchema = new mongoose.Schema({
         phone: String,
         email: String
     },
-    website: String,
-    userReferences: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    }],
+    website:{
+        type: String,
+        required: true
+    },
     status: {
         type: String,
         enum: ['active', 'inactive', 'pending']
@@ -31,6 +30,10 @@ const organizationSchema = new mongoose.Schema({
     created_at: {
         type: Date,
         default: Date.now
+    },
+    logo:{
+        type: String,
+        required: true
     },
     updated_at: {
         type: Date,

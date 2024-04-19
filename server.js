@@ -23,6 +23,8 @@ app.use('/api/teams', require('./routes/teamRoute'))
 
 app.get("/api/teams",require('./routes/teamRoute'));
 
+app.get('/api/project/manager',require('./routes/projectManagerRoute'))
+
 
 app.use = (req, res, next) => {
   res.status(404).send("Error: Endpoint not found");

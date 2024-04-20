@@ -11,7 +11,7 @@ const {
 router
     .route("/get-all")
     .get(auth, getProjectTeamAssignment);
-    
+
 router.route("/").
     post(auth, createProjectTeamAssignment)
 

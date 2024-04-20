@@ -5,7 +5,15 @@ const Project = require("../models/projectModel");
 const ProjectManager = require("../models/projectManagerModel");
 const getProjectTeamAssignment = async (req, res) => {
     try {
-        const projectTeamAssignment = await ProjectTeamAssignment.find();
+        const loginUser = req.user;
+        const projectTeamAssignment = await ProjectTeamAssignment.find().populate('project').populate('team');
+        if (!projectTeamAssignment.length) {
+            res.status(404).json({ message: "Project Team Assignment not found" });
+        }
+        const projectTeamAssignmentInfo = projectTeamAssignment.filter(projectTeamAssignment => projectTeamAssignment.project.orgId.toString() === loginUser.orgId.toString());
+        if (!projectTeamAssignmentInfo) {
+            return res.status(404).json({ message: "Project Team Assignment not found" });
+        }
         res.status(200).json(projectTeamAssignment);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -21,9 +29,9 @@ const createProjectTeamAssignment = async (req, res) => {
         if (!mongoose.Types.ObjectId.isValid(projectId) || !mongoose.Types.ObjectId.isValid(teamId)) {
             return res.status(400).json({ message: "Invalid ID" });
         }
-        const projectTeamAssignmentInfo = await ProjectTeamAssignment.findOne({ projectId: projectId, teamId: teamId});
+        const projectTeamAssignmentInfo = await ProjectTeamAssignment.find({ projectId: projectId, teamId: teamId });
 
-        if (projectTeamAssignmentInfo !== null && projectTeamAssignmentInfo !== undefined) {
+        if (projectTeamAssignmentInfo) {
             return res.status(400).json({ message: "Project Team Assignment already exists" });
         }
         //check if the login in user is an admin or project manager

@@ -1,14 +1,17 @@
 const express = require("express");
 const router = express.Router();
-const auth = require("../middleware/auth");
-const {
-    getProjectManager,
+const auth = require("../middleware/auth")
+
+const { getAllProjectManager,
+    getProjectManagerById,
     createProjectManager,
     updateProjectManager,
-    deleteProjectManager,
-    getProjectManagerById
-} = require("../controllers/projectManagerController");
-router.route("/").get(auth, getProjectManager).post(auth, createProjectManager);  
+    deleteProjectManager, } = require("../controllers/projectManagerController");
+router.
+    route("/")
+    .post(auth, createProjectManager);
+
+router.route("/get-all").get(auth, getAllProjectManager)
 
 router
     .route("/:id")

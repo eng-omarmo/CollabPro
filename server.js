@@ -13,17 +13,15 @@ app.listen(Port, () => {
   console.log(`server is running on port http://localhost:${Port}`.cyan);
 });
 
-app.use("/api/users", require("./routes/userRoute"));
+app.use("/api/user", require("./routes/userRoute"));
 
-app.use('/api/organizations', require('./routes/orgRoute'))
+app.use('/api/organization', require('./routes/orgRoute'))
 
-app.use('/api/projects', require('./routes/projectRoute'))
+app.use('/api/project', require('./routes/projectRoute'))
 
-app.use('/api/teams', require('./routes/teamRoute'))
+app.use('/api/team', require('./routes/teamRoute'))
 
-app.get("/api/teams",require('./routes/teamRoute'));
-
-app.get('/api/project/manager',require('./routes/projectManagerRoute'))
+app.use('/api/project/manager', require('./routes/projectManagerRoute'))
 
 
 app.use = (req, res, next) => {

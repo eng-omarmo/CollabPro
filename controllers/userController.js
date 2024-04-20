@@ -45,10 +45,10 @@ const getUserById = async (req, res) => {
 
 const createUser = async (req, res) => {
   try {
-    const { name, email, password, is_admin } = req.body;
+    const { name, email, password, is_admin,orgId } = req.body;
 
     // Check if all required fields are provided
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !orgId) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -90,6 +90,7 @@ const createUser = async (req, res) => {
       email,
       password: hashedPassword,
       is_admin,
+      orgId,
       emailVerificationToken: verificationToken,
       isEmailVerified: true,
     });

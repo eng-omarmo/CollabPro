@@ -12,6 +12,11 @@ const projectTeamAssignmentSchema = new mongoose.Schema({
         ref: "Team",
         required: true
     },
+    projectManager: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
+    },
     // Add any additional fields as needed
     assignmentDate: {
         type: Date,

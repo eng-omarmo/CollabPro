@@ -8,8 +8,9 @@ The goal of the project is to develop a collaboration platform tailored for smal
 
 3. **Team Endpoints:** These endpoints are designed to support team-related functionalities. Users can create, retrieve, update, and delete teams as needed. This enables organizations to structure their teams and manage team-related activities seamlessly.
 
-4. **Project Endpoints:** Project endpoints provide functionality for managing projects within organizations. Users can create, retrieve, update, and delete projects, enabling effective project management and collaboration among team members.
+4. **Project Endpoints:** Project endpoints facilitate various operations related to project management within organizations. Users can create new projects by providing essential details such as project name, description, and organization ID. Additionally, users can retrieve existing projects to view their details, update project information as needed, and delete projects that are no longer required. These endpoints play a crucial role in enabling efficient project management and fostering collaboration among team members within an organization.
 
+5. **Project Manager Assignment Endpoint:** The Project Manager Assignment endpoint allows users to assign project managers to specific projects within an organization. Users can specify the project ID, the user ID of the project manager, and the role of the project manager (defaulted to "Project Manager"). This endpoint facilitates effective delegation of project management responsibilities, ensuring that projects have dedicated managers overseeing their progress and coordinating team efforts.
 **Upcoming Endpoints:**
 
 1. **Team Assignment to Project:** This endpoint will allow teams to be assigned to specific projects. It will enable organizations to allocate resources and assign teams to projects based on project requirements and team capabilities.

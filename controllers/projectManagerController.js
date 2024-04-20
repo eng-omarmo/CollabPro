@@ -173,7 +173,7 @@ const deleteProjectManager = async (req, res) => {
     );
     res
       .status(200)
-      .json({ message: "Project Manager deleted", projectManager });
+      .json({ message: "Project Manager deleted", deletedProjectManagerInfo });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

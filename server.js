@@ -23,6 +23,10 @@ app.use('/api/team', require('./routes/teamRoute'))
 
 app.use('/api/project/manager', require('./routes/projectManagerRoute'))
 
+app.use('/api/project/team/assignment', require('./routes/projectTeamAssignmentRoute'))
+
+// app.use('/api/feedback', require('./routes/feedbackRoute'))
+
 
 app.use = (req, res, next) => {
   res.status(404).send("Error: Endpoint not found");

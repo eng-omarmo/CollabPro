@@ -1,21 +1,23 @@
 const express = require("express");
 const router = express.Router();
-const auth = require("../middleware/auth")
+const auth = require("../middleware/auth");
 
-const { getAllProjectManager,
+const { 
+    getAllProjectManager,
     getProjectManagerById,
     createProjectManager,
     updateProjectManager,
-    deleteProjectManager, } = require("../controllers/projectManagerController");
-router.
-    route("/")
-    .post(auth, createProjectManager);
+    deleteProjectManager
+} = require("../controllers/projectManagerController");
 
-router.route("/get-all").get(auth, getAllProjectManager)
+router.post("/", auth, createProjectManager);
+
+router.get("/get-all", auth, getAllProjectManager);
 
 router
     .route("/:id")
     .get(auth, getProjectManagerById)
     .put(auth, updateProjectManager)
     .delete(auth, deleteProjectManager);
-module.exports = router
+
+module.exports = router;

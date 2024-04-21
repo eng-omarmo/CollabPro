@@ -25,6 +25,8 @@ app.use('/api/project/manager', require('./routes/projectManagerRoute'))
 
 app.use('/api/project/team/assignment', require('./routes/projectTeamAssignmentRoute'))
 
+app.use('/api/task', require('./routes/taskRoute'))
+
 // app.use('/api/feedback', require('./routes/feedbackRoute'))
 
 

@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const sendEmail = require("../utility/mailer");
 
-const { handleLogo } = require("../utility/fileHandler");
+const { handleLogo } = require("../middleware/fileHandler");
 
 
 //controllers
@@ -57,7 +57,17 @@ const getOrgById = async (req, res) => {
 
 const createOrg = async (req, res) => {
     try {
+
+        // Extract organization data from request body
         const { name, address, type, contact, industry, website, password, logo } = req.body;
+
+        console.log(req.body.logo)
+
+        // Handle logo file operations
+        const logoPath = req.body.logo;
+        if (!logoPath) {
+            return res.status(400).json({ message: "Logo must be provided as a file path string" });
+        }
 
         // Validate required fields
         if (!name || !address || !type || !contact || !industry || !website || !password || !logo) {
@@ -69,8 +79,6 @@ const createOrg = async (req, res) => {
         if (typeof logo !== 'string') {
             return res.status(400).json({ message: "Logo must be provided as a file path string" });
         }
-        const logoPath = await handleLogo(logo);
-
 
         // Check if user with the provided email already exists
         const existingUser = await User.findOne({ email: contact.email });

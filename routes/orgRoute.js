@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
+
 const auth = require("../middleware/auth");
+const handleLogo = require("../middleware/fileHandler");
 const {
   getOrg,
   createOrg,
@@ -10,10 +12,13 @@ const {
   getOrgById,
   verifyOrganization
 } = require("../controllers/orgController");
-router.route("/").get(getOrg).post(createOrg);
+router.route("/")
+  .get(getOrg)
+  .post(handleLogo, createOrg);
+
 router
   .route("/:id")
-  .get(auth,getOrgById)
+  .get(auth, getOrgById)
   .put(auth, updateOrg)
   .delete(auth, deleteOrg);
 

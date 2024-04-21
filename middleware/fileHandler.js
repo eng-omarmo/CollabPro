@@ -1,10 +1,16 @@
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 
 // Define the multer storage and upload instances
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'public');
+        // Check if the 'public/images' directory exists, create it if not
+        const uploadDir = 'public/images';
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+        cb(null, uploadDir);
     },
     filename: function (req, file, cb) {
         // Check if file has a valid extension
@@ -32,8 +38,8 @@ const handleLogo = (req, res, next) => {
         } else {
             // If upload is successful, move to the next middleware or route handler
             if (req.file) {
-                // If file uploaded successfully, attach file path to req.body.logo
-                req.body.logo = req.file.path;
+                // If file uploaded successfully, update req.body.logo path to reflect the correct location
+                req.body.logo = path.join('public/images', req.file.filename);
             }
             next();
         }

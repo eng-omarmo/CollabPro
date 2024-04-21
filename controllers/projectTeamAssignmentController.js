@@ -8,9 +8,10 @@ const getProjectTeamAssignment = async (req, res) => {
         const loginUser = req.user;
         const projectTeamAssignment = await ProjectTeamAssignment.find()
             .populate('project')
+            .populate('projectManager')
             .populate('team')
-            .populate('projectManager');
-
+            .lean();
+        
         console.log(projectTeamAssignment);
         if (!projectTeamAssignment.length) {
             res.status(404).json({ message: "Project Team Assignment not found" });

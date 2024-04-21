@@ -65,12 +65,12 @@ const createUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid email address" });
     }
 
-    // Check if is_admin is a valid boolean value
-    if (typeof is_admin !== "boolean") {
-      return res
-        .status(400)
-        .json({ message: "is_admin must be true or false" });
-    }
+    // // Check if is_admin is a valid boolean value
+    // if (typeof is_admin !== "boolean") {
+    //   return res
+    //     .status(400)
+    //     .json({ message: "is_admin must be true or false" });
+    // }
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);

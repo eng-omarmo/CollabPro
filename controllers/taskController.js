@@ -144,6 +144,47 @@ const createTask = async (req, res) => {
 
 const updateTask = async (req, res) => {
     try {
+        const { title, description, projectId, assignedTo, dueDate } = req.body;
+        // Check if required fields are provided
+        if (!req.body.createdBy || mongoose.Types.ObjectId.isValid(req.body.createdBy) === false) {
+            return res.status(400).json({ message: "Invalid user ID" })
+        }
+        // Check if required fields are provided
+        if (!title || !description || !projectId) {
+            return res.status(400).json({ message: "Title, description, and project ID are required fields" });
+        }
+        //check if the login in user is project manager 
+        const loginUser = req.user.id;
+        const expectedProjectManager= req.body.createdBy;
+
+        console.log("this is the login user id",loginUser , "this is the project manager id",expectedProjectManager );
+        
+        if (loginUser!== expectedProjectManager) {
+            return res.status(401).json({ message: "the login project manager is not the same as the one provided" });
+        }
+        //check  if the project manager and assignedTo belong to the same organization
+        const loginUserOrgId = req.user.orgId;
+
+        const projectManagerTeam = await Team.find({ orgId: loginUserOrgId, projectManagerId: projectManagerId._id });
+        if (!projectManagerTeam) {
+            return res.status(404).json({ message: "the project manager does have team" });
+        }
+        const projectManagerTeamIds = projectManagerTeam.map(team => team._id);
+        const projectTeamAssignment = await ProjectTeamAssignment.find({ project: projectId, team: { $in: projectManagerTeamIds } });
+        if (!projectTeamAssignment) {
+            return res.status(404).json({ message: "the project manager does have team" });
+        }
+           //update the task
+        const updatedTask = await Task.findByIdAndUpdate(req.params.id, {
+            title,
+            description,
+            project: projectId,
+            assignedTo,
+            dueDate
+        }, { new: true });
+        if (!updatedTask) {
+            return res.status(404).json({ message: "Task not found" });
+        }
         res.status(200).json({ message: "Task updated" });
     } catch (error) {
         res.status(500).json({ message: error.message });

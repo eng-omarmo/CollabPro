@@ -89,6 +89,8 @@ const getProjectManagerById = async (req, res) => {
 
 const createProjectManager = async (req, res) => {
   try {
+
+    console.log(req.body);
     const { project, user, role } = req.body;
     console.log(project, user, role)
     if (!project || !user || !role) {

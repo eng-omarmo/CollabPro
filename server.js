@@ -27,7 +27,7 @@ app.use('/api/project/team/assignment', require('./routes/projectTeamAssignmentR
 
 app.use('/api/task', require('./routes/taskRoute'))
 
-// app.use('/api/feedback', require('./routes/feedbackRoute'))
+app.use('/api/feedback', require('./routes/feedbackRoute'))
 
 
 app.use = (req, res, next) => {

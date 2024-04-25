@@ -65,8 +65,14 @@ const createFeedback = async (req, res) => {
         if (!user || !project || !task || !feedbackType || !description || !status) {
             return res.status(400).json({ message: "All fields are required" });
         }
-        const feedback = await Feedback.create({ user, project, task, feedbackType, description, status });
-        res.status(201).json({ message: "Feedback created", feedback });
+
+        //check the login user and the user in the body are  in same organization and same project
+        const projectManagerId = await ProjectManager.findOne({ userId: req.user.id, orgId: req.user.orgId }).populate("userId");
+        if (projectManagerId && projectManagerId.userId.orgId == req.user.orgId) {
+            const feedback = await Feedback.create({ user, project, task, feedbackType, description, status });
+            return res.status(201).json({ message: "Feedback created", feedback });
+        }
+        res.status(401).json({ message: "Not authorized" });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

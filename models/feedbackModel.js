@@ -15,7 +15,7 @@ const feedbackSchema = new mongoose.Schema({
   },
   feedbackType: {
     type: String,
-    enum: ['bug_report', 'feature_request', 'improvement_suggestion']
+    required: true
   },
   description: String,
   status: {

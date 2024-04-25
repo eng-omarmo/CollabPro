@@ -38,7 +38,7 @@ const getFeedbacks = async (req, res) => {
         // check if the login user is admin
         const userRole = req.user.is_admin;
         if (!userRole) {
-            return res.status(401).json({ message: "Not authorized" });
+            return res.status(401).json({ message: "Not authorized only for admin to view all feedbacks" });
         }
         // get all feedbacks belonging to the same organization
         const feedbacks = await Feedback.find({ orgId: req.user.orgId }).populate("user project task");

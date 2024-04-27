@@ -45,6 +45,7 @@ const getFeedbacks = async (req, res) => {
         if (!feedbacks) {
             return res.status(404).json({ message: "Feedbacks not found" });
         }
+        //every feedback belongs to the same organization and same project any user can see it he is just user 
         // check if the login user is a project manager and if the project manager belongs to the same organization and same project
         const loginUser = req.user.id;
         const projectManagerId = await ProjectManager.findOne({ userId: loginUser, orgId: req.user.orgId }).populate("userId");
@@ -86,6 +87,12 @@ const updateFeedback = async (req, res) => {
         if (!user || !project || !task || !feedbackType || !description || !status) {
             return res.status(400).json({ message: "All fields are required" });
         }
+        //check the login user and the user in the body are  in same organization and same project
+        const projectManagerId = await ProjectManager.findOne({ userId: req.user.id, orgId: req.user.orgId }).populate("userId");
+        if (projectManagerId && projectManagerId.userId.orgId == req.user.orgId) {
+            const feedback = await Feedback.create({ user, project, task, feedbackType, description, status });
+            return res.status(201).json({ message: "Feedback created", feedback });
+        }
         const feedback = await Feedback.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.status(200).json({ message: "Feedback updated", feedback });
     } catch (error) {
@@ -95,6 +102,12 @@ const updateFeedback = async (req, res) => {
 
 deleteFeedback = async (req, res) => {
     try {
+        //check the login user and the user in the body are  in same organization and same project
+        const projectManagerId = await ProjectManager.findOne({ userId: req.user.id, orgId: req.user.orgId }).populate("userId");
+        if (projectManagerId && projectManagerId.userId.orgId == req.user.orgId) {
+            const feedback = await Feedback.create({ user, project, task, feedbackType, description, status });
+            return res.status(201).json({ message: "Feedback created", feedback });
+        }
         const feedback = await Feedback.findByIdAndDelete(req.params.id);
         res.status(200).json({ message: "Feedback deleted", feedback });
     } catch (error) {

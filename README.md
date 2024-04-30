@@ -16,12 +16,11 @@ The project's objective is to develop a collaboration platform tailored for smal
 
 7. **Comment:** Feature 6 has not been thoroughly tested yet, but the endpoint has been created.
 
+8. **To-Dos:** This endpoint will allow every organization to create to-do lists, update, delete, and mark tasks as done. It will facilitate every organization in creating schedules for themselves of their to-dos.
+9. **Feedbacks:** Feedback endpoints will enable team members to provide feedback on tasks, projects, and team performance. This feature fosters a culture of continuous improvement and collaboration by encouraging open communication and constructive feedback among team members.
+
 **Upcoming Endpoints:**
 
-1. **Feedbacks:** Feedback endpoints will enable team members to provide feedback on tasks, projects, and team performance. This feature fosters a culture of continuous improvement and collaboration by encouraging open communication and constructive feedback among team members.
-
-2. **To-Dos:** This endpoint will allow every organization to create to-do lists, update, delete, and mark tasks as done. It will facilitate every organization in creating schedules for themselves of their to-dos.
-
-3. **Group Messaging for Teams:** This endpoint will enable teams within organizations to have groups where they can send messages and chat. Only members of the same organization, team, or project manager/administrator of the organization can view their chat.
+1. **Group Messaging for Teams:** This endpoint will enable teams within organizations to have groups where they can send messages and chat. Only members of the same organization, team, or project manager/administrator of the organization can view their chat.
 
 By implementing these endpoints, our collaboration platform aims to provide organizations with the tools and functionalities they need to streamline their operations, enhance team collaboration, and drive project success. Each endpoint is designed to be intuitive, efficient, and secure, ensuring a seamless user experience and enabling organizations to achieve their collaboration goals effectively.

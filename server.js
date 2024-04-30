@@ -29,6 +29,8 @@ app.use('/api/task', require('./routes/taskRoute'))
 
 app.use('/api/feedback', require('./routes/feedbackRoute'))
 
+app.use('/api/todo', require('./routes/todoRoute'))
+
 
 app.use = (req, res, next) => {
   res.status(404).send("Error: Endpoint not found");

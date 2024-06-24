@@ -18,11 +18,9 @@ RUN npm install
 # Run tests
 RUN npm test
 
-# Create a simple HTML file for demo purposes
-RUN echo 'hello' > hello.html
+
 
 # Start the HTTP server in the background
 RUN BACKGROUND http-server -p 8000
 
-# Expose the server to the outside world
-EXPOSE 3000
+

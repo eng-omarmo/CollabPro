@@ -10,7 +10,10 @@ const {
   deleteUser,
   getUserById,
   verifyUser,
-  loginUser
+  loginUser,
+  forgetPassword,
+  resetPassword,
+  getResetPassword
 } = require("../controllers/userController");
 
 
@@ -18,5 +21,7 @@ router.route("/").get(auth,is_admin,getUser).post(createUser)
 router.route("/:id").get(auth, getUserById).put(auth, updateUser).delete(auth, deleteUser);
 
 router.get('/verify/:token', verifyUser)
-router.post('/login', loginUser)
+router.post('/login', loginUser).post('/forget-password',forgetPassword).post('reset-password/:token',resetPassword)
+
+
 module.exports = router;

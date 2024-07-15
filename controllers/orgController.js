@@ -55,51 +55,44 @@ const getOrgById = async (req, res) => {
     }
 };
 
+const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+};
 const createOrg = async (req, res) => {
     try {
-
         // Extract organization data from request body
-        const { name, address, type, contact, industry, website, password, logo } = req.body;
-
-        console.log(req.body.logo)
-
-        // Handle logo file operations
-        const logoPath = req.body.logo;
-        if (!logoPath) {
-            return res.status(400).json({ message: "Logo must be provided as a file path string" });
+        const { name, address, type, contact, industry, website, password, logo, email } = req.body;
+        // // Validate required fields
+        // if (!name || !address || !type || !contact || !industry || !website || !password || !logo || !email) {
+        //     return res.status(400).json({ message: "All fields are required, including password, logo, and email" });
+        // }
+        // Validate email format
+        if (!isValidEmail(contact.email)) {
+            return res.status(400).json({ message: "Invalid email format" });
         }
-
-        // Validate required fields
-        if (!name || !address || !type || !contact || !industry || !website || !password || !logo) {
-            return res.status(400).json({ message: "All fields are required, including password and logo" });
-        }
-
         // Handle logo file operations
         // Ensure the logo file is provided as a file path string
         if (typeof logo !== 'string') {
             return res.status(400).json({ message: "Logo must be provided as a file path string" });
         }
 
+        // Validate contact information
+        if (!contact || !contact.email || !contact.phone) {
+            return res.status(400).json({ message: "Contact details including email and phone are required" });
+        }
+
         // Check if user with the provided email already exists
-        const existingUser = await User.findOne({ email: contact.email });
+        const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ message: "User with this email already exists" });
         }
 
-        // Check if organization with the provided name and contact already exists
-        const existingOrg = await Organization.findOne({ name, 'contact.email': contact.email });
+        // Check if organization with the provided name and contact email already exists
+        const existingOrg = await Organization.findOne({ name, "contact.email": contact.email });
         if (existingOrg) {
-            return res.status(400).json({ message: "Organization with this name and contact already exists" });
+            return res.status(400).json({ message: "Organization with this name and contact email already exists" });
         }
-
-        // Validate password length
-        if (password.length < 6) {
-            return res.status(400).json({ message: "Password must be at least 6 characters" });
-        }
-
-        // Hash the password
-        const hashedPassword = await bcrypt.hash(password, 10);
-
         // Generate a verification token
         const verificationToken = generateRandomToken(20);
 
@@ -110,23 +103,25 @@ const createOrg = async (req, res) => {
             address,
             contact,
             industry,
+            email,
             website,
             is_admin: true,
-            logo: logoPath,
+            logo: logo,
             status: "active",
         });
 
-        // Rollback organization creation if user creation fails
+        // Rollback organization creation if it fails
         if (!createdOrg) {
-            await fs.promises.unlink(logoPath); // Delete uploaded logo
             return res.status(400).json({ message: "Failed to create organization" });
         }
 
+        // Hash the password
+        const passwordHash = bcrypt.hashSync(password, 10);
         // Create the user
         const createdUser = await User.create({
-            name,
+            name: name,
             email: contact.email,
-            password: hashedPassword,
+            password: passwordHash,
             is_admin: true,
             emailVerificationToken: verificationToken,
             isEmailVerified: false,
@@ -136,7 +131,6 @@ const createOrg = async (req, res) => {
         // Rollback user creation if it fails
         if (!createdUser) {
             await Organization.deleteOne({ _id: createdOrg._id }); // Delete created organization
-            await fs.promises.unlink(logoPath); // Delete uploaded logo
             return res.status(400).json({ message: "Failed to create user" });
         }
 
@@ -161,9 +155,11 @@ const createOrg = async (req, res) => {
         });
     } catch (error) {
         // Handle any errors that occur during the process
-        res.status(500).json({ message: error.message });
+        console.error("Error creating organization:", error);
+        res.status(500).json({ message: "Failed to create organization", error: error.message });
     }
 };
+
 
 
 const updateOrg = async (req, res) => {

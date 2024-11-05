@@ -5,6 +5,7 @@ const jsonwebtoken = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const ForgetPassword = require('../models/ForgetPasswordModel');
 const sendResponse = require("../utility/response");
+const isValidEmail = require("../utility/functions");
 const getUser = async (req, res) => {
   try {
     const user = await User.find();
@@ -59,8 +60,8 @@ const createUser = async (req, res) => {
     }
 
     // Check if email is valid
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+
+    if (isValidEmail(email) === false) {
       return res.status(400).json({ message: "Invalid email address" });
     }
 
@@ -265,7 +266,7 @@ generateRandomToken = (n) => {
   return token;
 };
 
-const loginUser = async (req, res) => {
+const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
@@ -374,7 +375,7 @@ module.exports = {
   updateUser,
   deleteUser,
   verifyUser,
-  loginUser,
+  login,
   resetPassword,
   forgetPassword,
   generateToken

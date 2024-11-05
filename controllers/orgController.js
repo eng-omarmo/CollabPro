@@ -4,7 +4,7 @@ const User = require("../models/userModel");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const sendEmail = require("../utility/mailer");
-
+const isValidEmail = require("../utility/functions");
 const { handleLogo } = require("../middleware/fileHandler");
 
 
@@ -55,10 +55,7 @@ const getOrgById = async (req, res) => {
     }
 };
 
-const isValidEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-};
+
 const createOrg = async (req, res) => {
     try {
         // Extract organization data from request body
@@ -209,6 +206,7 @@ const updateOrg = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
 
 
 const deleteOrg = async (req, res) => {

@@ -98,7 +98,7 @@ const createTask = async (req, res) => {
     try {
         const { title, description, projectId, assignedTo, dueDate } = req.body;
         // Check if required fields are provided
-        if (!req.body.createdBy || mongoose.Types.ObjectId.isValid(req.body.createdBy) === false) {
+        if (!req.body.createdBy || !mongoose.Types.ObjectId.isValid(req.body.createdBy)) {
             return res.status(400).json({ message: "Invalid user ID" })
         }
         // Check if required fields are provided

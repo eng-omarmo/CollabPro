@@ -6,8 +6,6 @@ const Project = require("../models/projectModel");
 
 const getAllProjectManager = async (req, res) => {
   try {
-
-
     //query the project all the projects of this organization
     const orgId = req.user.orgId
     const allProject = await Project.find({ 'orgId': orgId })
@@ -29,8 +27,6 @@ const getAllProjectManager = async (req, res) => {
         select: 'name description orgId'
       })
       .lean();
-
-
     // Check authorization for each project manager
     for (const projectManager of projectManagers) {
       if (

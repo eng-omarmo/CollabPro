@@ -29,7 +29,8 @@ app.use('/api/task', require('./routes/taskRoute'))
 
 app.use('/api/feedback', require('./routes/feedbackRoute'))
 
-app.use('/api/todo', require('./routes/todoRoute'))
+app.use('/api/to-do', require('./routes/todoRoute'))
+
 
 
 app.use = (req, res, next) => {
